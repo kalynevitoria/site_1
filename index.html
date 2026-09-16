@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgroFácil - Gestão para Agricultores</title>
+
+<!-- Fonte e ícones -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+  /* ====== PALETA: VERDE E MARROM ====== */
+  :root {
+    --verde-escuro: #2E5D34;
+    --verde-medio: #4CAF50;
+    --verde-claro: #A5D6A7;
+    --marrom-escuro: #4E342E;
+    --marrom-medio: #6D4C41;
+    --marrom-claro: #D7CCC8;
+    --bege: #F5F0E6;
+    --branco: #FFFFFF;
+    --vermelho: #C62828;
+    --sombra: 0 6px 20px rgba(0,0,0,0.15);
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  body {
+    background: var(--bege);
+    color: var(--marrom-escuro);
+    min-height: 100vh;
+  }
+
+  /* ====== TELAS ====== */
+  .tela {
+    display: none;
+    min-height: 100vh;
+    padding: 30px 20px;
+  }
+  .tela.ativa {
+    display: block;
+  }
+
+  /* ====== CABEÇALHO ====== */
+  .header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  .header h1 {
+    color: var(--verde-escuro);
+    font-size: 2.2rem;
+    margin-bottom: 8px;
+  }
+  .header p {
+    color: var(--marrom-medio);
+    font-size: 1rem;
+  }
+  .icone-principal {
+    font-size: 70px;
+    color: var(--verde-medio);
+    margin-bottom: 15px;
+  }
+
+  /* ====== CONTAINER ====== */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* ====== CARDS / CAIXAS ====== */
+  .card {
+    background: var(--branco);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: var(--sombra);
+    border-top: 6px solid var(--verde-medio);
+  }
+
+  /* ====== BOTÕES ====== */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px 25px;
+    border: none;
+    border-radius: 14px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+    color: var(--branco);
+  }
+  .btn:hover {
+    transform: translateY(-3px);
+  }
+  .btn-verde { background: var(--verde-medio); }
+  .btn-verde:hover { background: var(--verde-escuro); }
+  .btn-marrom { background: var(--marrom-medio); }
+  .btn-marrom:hover { background: var(--marrom-escuro); }
+  .btn-vermelho { background: var(--vermelho); }
+  .btn-vermelho:hover { background: #8E0000; }
+  .btn-grande {
+    font-size: 1.2rem;
+    padding: 25px 20px;
+    flex-direction: column;
+    min-height: 150px;
+    width: 100%;
+  }
+  .btn-grande i {
+    font-size: 3rem;
+  }
+
+  /* ====== INPUTS ====== */
+  label {
+    display: block;
+    margin: 15px 0 6px;
+    font-weight: 600;
+    color: var(--marrom-escuro);
+  }
+  input, select, textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid var(--marrom-claro);
+    border-radius: 12px;
+    font-size: 1rem;
+    background: var(--bege);
+    color: var(--marrom-escuro);
+    outline: none;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--verde-medio);
+  }
+
+  /* ====== OPÇÕES DO QUESTIONÁRIO ====== */
+  .opcao {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px;
+    margin: 10px 0;
+    background: var(--bege);
+    border: 2px solid var(--marrom-claro);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .opcao:hover {
+    border-color: var(--verde-medio);
+    background: var(--verde-claro);
+  }
+  .opcao input {
+    width: auto;
+    transform: scale(1.4);
+    accent-color: var(--verde-medio);
+  }
+
+  /* ====== GRID DOS BOTÕES PRINCIPAIS ====== */
+  .grid-botoes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-top: 25px;
+  }
+
+  /* ====== RESUMO (DASHBOARD) ====== */
+  .resumo {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+  }
+  .resumo-item {
+    background: var(--branco);
+    padding: 20px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: var(--sombra);
+    border-left: 6px solid var(--verde-medio);
+  }
+  .resumo-item.negativo { border-left-color: var(--vermelho); }
+  .resumo-item h3 {
+    font-size: 0.95rem;
+    color: var(--marrom-medio);
+    margin-bottom: 8px;
+  }
+  .resumo-item .valor {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--verde-escuro);
+  }
+  .resumo-item.negativo .valor { color: var(--vermelho); }
+
+  /* ====== LISTA DE REGISTROS ====== */
+  .registro {
+    background: var(--branco);
+    padding: 15px 20px;
+    border-radius: 12px;
+    margin: 10px 0;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    border-left: 6px solid var(--verde-medio);
+  }
+  .registro.perda { border-left-color: var(--vermelho); }
+  .registro .info strong { display: block; color: var(--marrom-escuro); }
+  .registro .info small { color: var(--marrom-medio); }
+  .registro .valor-reg { font-weight: 700; font-size: 1.1rem; }
+  .registro .valor-reg.pos { color: var(--verde-escuro); }
+  .registro .valor-reg.neg { color: var(--vermelho); }
+
+  /* ====== DIÁRIO ====== */
+  .diario-item {
+    background: var(--branco);
+    padding: 18px;
+    border-radius: 14px;
+    margin: 12px 0;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    border-left: 6px solid var(--marrom-medio);
+  }
+  .diario-item h4 { color: var(--verde-escuro); margin-bottom: 6px; }
+  .diario-item p { margin: 4px 0; color: var(--marrom-escuro); }
+
+  /* ====== TOPO INTERNO ====== */
+  .topo-interno {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .topo-interno h2 {
+    color: var(--verde-escuro);
+    font-size: 1.6rem;
+  }
+
+  .btn-voltar {
+    background: var(--marrom-medio);
+    color: var(--branco);
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-voltar:hover { background: var(--marrom-escuro); }
+
+  .msg-vazio {
+    text-align: center;
+    padding: 30px;
+    color: var(--marrom-medio);
+    font-style: italic;
+  }
+
+  /* ====== RESPONSIVO ====== */
+  @media (max-width: 600px) {
+    .header h1 { font-size: 1.6rem; }
+    .icone-principal { font-size: 55px; }
+    .btn-grande { min-height: 120px; font-size: 1rem; }
+    .btn-grande i { font-size: 2.3rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- TELA 1: QUESTIONÁRIO INICIAL                                  -->
+<!-- ============================================================ -->
+<section id="tela-questionario" class="tela ativa">
+  <div class="container">
+    <div class="header">
+      <div class="icone-principal"><i class="fa-solid fa-seedling"></i></div>
+      <h1>AgroFácil</h1>
+      <p>Gestão simples para o produtor rural</p>
+    </div>
+
+    <div class="card">
+      <h2 style="color: var(--verde-escuro); margin-bottom: 10px;">
+        <i class="fa-solid fa-clipboard-question"></i> Antes de começar...
+      </h2>
+      <p style="margin-bottom: 20px; color: var(--marrom-medio);">
+        Por que você está acessando o AgroFácil hoje?
+      </p>
+
+      <form id="form-questionario">
+        <label class="opcao">
+          <input type="radio" name="motivo" value="Controle de lucros e prejuízos" required>
+          <span>💰 Controlar meus lucros e prejuízos</span>
+        </label>
+        <label class="opcao">
+          <input type="radio" name="motivo" value="Planejar melhor minhas culturas">
+          <span>🌾 Planejar melhor minhas culturas</span>
+        </label>
+        <label class="opcao">
+          <input type="radio" name="motivo" value="Saber a melhor época de plantar">
+          <span>📅 Saber a melhor época de plantar</span>
+        </label>
+        <label class="opcao">
+          <input type="radio" name="motivo" value="Anotar perdas e melhorar a produção">
+          <span>📉 Anotar perdas e melhorar a produção</span>
+        </label>
+        <label class="opcao">
+          <input type="radio" name="motivo" value="Organizar minha propriedade em geral">
+          <span>🚜 Organizar minha propriedade em geral</span>
+        </label>
+
+        <button type="submit" class="btn btn-verde" style="margin-top: 25px; width: 100%;">
+          <i class="fa-solid fa-arrow-right"></i> Continuar
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- TELA 2: CADASTRO                                              -->
+<!-- ============================================================ -->
+<section id="tela-cadastro" class="tela">
+  <div class="container">
+    <div class="header">
+      <div class="icone-principal"><i class="fa-solid fa-user-plus"></i></div>
+      <h1>Criar Cadastro</h1>
+      <p>Preencha seus dados para começar</p>
+    </div>
+
+    <div class="card">
+      <form id="form-cadastro">
+        <label for="nome">👤 Nome completo</label>
+        <input type="text" id="nome" placeholder="Ex: João da Silva" required>
+
+        <label for="propriedade">🚜 Nome da propriedade</label>
+        <input type="text" id="propriedade" placeholder="Ex: Fazenda Boa Esperança" required>
+
+        <label for="cidade">📍 Cidade / Estado</label>
+        <input type="text" id="cidade" placeholder="Ex: Campinas - SP" required>
+
+        <label for="email">📧 E-mail</label>
+        <input type="email" id="email" placeholder="exemplo@email.com" required>
+
+        <label for="senha">🔒 Senha (para acessos futuros)</label>
+        <input type="password" id="senha" placeholder="Mínimo 4 caracteres" minlength="4" required>
+
+        <button type="submit" class="btn btn-verde" style="margin-top: 25px; width: 100%;">
+          <i class="fa-solid fa-check"></i> Cadastrar e Entrar
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- TELA 3: PAINEL PRINCIPAL (Dashboard)                          -->
+<!-- ============================================================ -->
+<section id="tela-painel" class="tela">
+  <div class="container">
+    <div class="topo-interno">
+      <h2><i class="fa-solid fa-tractor"></i> Olá, <span id="nome-usuario">Agricultor</span>!</h2>
+      <button class="btn-voltar" onclick="sair()">
+        <i class="fa-solid fa-right-from-bracket"></i> Sair
+      </button>
+    </div>
+
+    <p style="margin-bottom: 15px; color: var(--marrom-medio);">
+      <i class="fa-solid fa-location-dot"></i> <span id="info-propriedade"></span>
+    </p>
+
+    <!-- RESUMO -->
+    <div class="resumo">
+      <div class="resumo-item">
+        <h3>💵 Total Investido</h3>
+        <div class="valor" id="res-investimento">R$ 0,00</div>
+      </div>
+      <div class="resumo-item">
+        <h3>🌾 Total de Lucros</h3>
+        <div class="valor" id="res-lucro">R$ 0,00</div>
+      </div>
+      <div class="resumo-item negativo">
+        <h3>📉 Total de Perdas</h3>
+        <div class="valor" id="res-perda">R$ 0,00</div>
+      </div>
+      <div class="resumo-item" id="card-saldo">
+        <h3>⚖️ Saldo Final</h3>
+        <div class="valor" id="res-saldo">R$ 0,00</div>
+      </div>
+    </div>
+
+    <!-- BOTÕES PRINCIPAIS -->
+    <div class="grid-botoes">
+      <button class="btn btn-verde btn-grande" onclick="abrirTela('investimento')">
+        <i class="fa-solid fa-sack-dollar"></i>
+        Adicionar Investimento
+      </button>
+      <button class="btn btn-verde btn-grande" onclick="abrirTela('lucro')">
+        <i class="fa-solid fa-coins"></i>
+        Adicionar Lucro
+      </button>
+      <button class="btn btn-vermelho btn-grande" onclick="abrirTela('perda')">
+        <i class="fa-solid fa-arrow-trend-down"></i>
+        Adicionar Perda
+      </button>
+      <button class="btn btn-marrom btn-grande" onclick="abrirTela('diario')">
+        <i class="fa-solid fa-book"></i>
+        Diário de Cultivo
+      </button>
+    </div>
+
+    <!-- HISTÓRICO -->
+    <h3 style="margin-top: 40px; color: var(--verde-escuro);">
+      <i class="fa-solid fa-clock-rotate-left"></i> Histórico de Registros
+    </h3>
+    <div id="lista-registros"></div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- TELA 4: ADICIONAR REGISTRO (Investimento / Lucro / Perda)     -->
+<!-- ============================================================ -->
+<section id="tela-registro" class="tela">
+  <div class="container">
+    <div class="topo-interno">
+      <h2 id="titulo-registro">Adicionar</h2>
+      <button class="btn-voltar" onclick="abrirTela('painel')">
+        <i class="fa-solid fa-arrow-left"></i> Voltar
+      </button>
+    </div>
+
+    <div class="card">
+      <form id="form-registro">
+        <input type="hidden" id="tipo-registro">
+
+        <label for="cultura">🌱 Cultura / Produto</label>
+        <input type="text" id="cultura" placeholder="Ex: Milho, Café, Soja..." required>
+
+        <label for="valor">💰 Valor (R$)</label>
+        <input type="number" id="valor" step="0.01" min="0" placeholder="0,00" required>
+
+        <label for="data">📅 Data</label>
+        <input type="date" id="data" required>
+
+        <label for="obs">📝 Observações (opcional)</label>
+        <textarea id="obs" rows="3" placeholder="Ex: Compra de sementes, venda na feira..."></textarea>
+
+        <button type="submit" class="btn btn-verde" style="margin-top: 25px; width: 100%;">
+          <i class="fa-solid fa-floppy-disk"></i> Salvar Registro
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- TELA 5: DIÁRIO DE CULTIVO                                     -->
+<!-- ============================================================ -->
+<section id="tela-diario" class="tela">
+  <div class="container">
+    <div class="topo-interno">
+      <h2><i class="fa-solid fa-book"></i> Diário de Cultivo</h2>
+      <button class="btn-voltar" onclick="abrirTela('painel')">
+        <i class="fa-solid fa-arrow-left"></i> Voltar
+      </button>
+    </div>
+
+    <div class="card" style="margin-bottom: 25px;">
+      <h3 style="color: var(--verde-escuro); margin-bottom: 15px;">
+        <i class="fa-solid fa-plus"></i> Novo Registro no Diário
+      </h3>
+      <form id="form-diario">
+        <label for="d-cultura">🌾 Cultura</label>
+        <input type="text" id="d-cultura" placeholder="Ex: Milho" required>
+
+        <label for="d-mes-plantio">📅 Mês ideal de plantio</label>
+        <select id="d-mes-plantio" required>
+          <option value="">Selecione...</option>
+          <option>Janeiro</option><option>Fevereiro</option><option>Março</option>
+          <option>Abril</option><option>Maio</option><option>Junho</option>
+          <option>Julho</option><option>Agosto</option><option>Setembro</option>
+          <option>Outubro</option><option>Novembro</option><option>Dezembro</option>
+        </select>
+
+        <label for="d-mes-colheita">🌾 Mês ideal de colheita</label>
+        <select id="d-mes-colheita" required>
+          <option value="">Selecione...</option>
+          <option>Janeiro</option><option>Fevereiro</option><option>Março</option>
+          <option>Abril</option><option>Maio</option><option>Junho</option>
+          <option>Julho</option><option>Agosto</option><option>Setembro</option>
+          <option>Outubro</option><option>Novembro</option><option>Dezembro</option>
+        </select>
+
+        <label for="d-notas">📝 Anotações</label>
+        <textarea id="d-notas" rows="3" placeholder="Ex: Solo preparado, adubação feita..."></textarea>
+
+        <button type="submit" class="btn btn-marrom" style="margin-top: 20px; width: 100%;">
+          <i class="fa-solid fa-book-medical"></i> Salvar no Diário
+        </button>
+      </form>
+    </div>
+
+    <h3 style="color: var(--verde-escuro); margin-bottom: 15px;">
+      <i class="fa-solid fa-list"></i> Meus Registros
+    </h3>
+    <div id="lista-diario"></div>
+  </div>
+</section>
+
+<script>
+/* ============================================================
+   ESTADO (em memória + localStorage)
+   ============================================================ */
+let usuario = JSON.parse(localStorage.getItem('agrofacil_usuario')) || null;
+let registros = JSON.parse(localStorage.getItem('agrofacil_registros')) || [];
+let diario = JSON.parse(localStorage.getItem('agrofacil_diario')) || [];
+
+/* ============================================================
+   NAVEGAÇÃO ENTRE TELAS
+   ============================================================ */
+function mostrarTela(id) {
+  document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
+  document.getElementById('tela-' + id).classList.add('ativa');
+  window.scrollTo(0, 0);
+}
+
+/* ============================================================
+   TELA 1: QUESTIONÁRIO
+   ============================================================ */
+document.getElementById('form-questionario').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const motivo = document.querySelector('input[name="motivo"]:checked').value;
+  localStorage.setItem('agrofacil_motivo', motivo);
+  mostrarTela('cadastro');
+});
+
+/* ============================================================
+   TELA 2: CADASTRO
+   ============================================================ */
+document.getElementById('form-cadastro').addEventListener('submit', (e) => {
+  e.preventDefault();
+  usuario = {
+    nome: document.getElementById('nome').value,
+    propriedade: document.getElementById('propriedade').value,
+    cidade: document.getElementById('cidade').value,
+    email: document.getElementById('email').value,
+    senha: document.getElementById('senha').value
+  };
+  localStorage.setItem('agrofacil_usuario', JSON.stringify(usuario));
+  entrarNoPainel();
+});
+
+/* ============================================================
+   ENTRAR / SAIR
+   ============================================================ */
+function entrarNoPainel() {
+  if (!usuario) { mostrarTela('cadastro'); return; }
+  document.getElementById('nome-usuario').textContent = usuario.nome.split(' ')[0];
+  document.getElementById('info-propriedade').textContent =
+    usuario.propriedade + ' — ' + usuario.cidade;
+  atualizarResumo();
+  renderizarRegistros();
+  renderizarDiario();
+  mostrarTela('painel');
+}
+
+function sair() {
+  if (confirm('Deseja sair? Seus dados continuarão salvos neste navegador.')) {
+    mostrarTela('questionario');
+  }
+}
+
+/* ============================================================
+   NAVEGAÇÃO INTERNA (painel -> registro / diário)
+   ============================================================ */
+function abrirTela(destino) {
+  if (destino === 'painel') {
+    entrarNoPainel();
+    return;
+  }
+  if (destino === 'diario') {
+    renderizarDiario();
+    mostrarTela('diario');
+    return;
+  }
+  // investimento / lucro / perda
+  document.getElementById('tipo-registro').value = destino;
+  const titulos = {
+    investimento: '💰 Adicionar Investimento',
+    lucro: '🌾 Adicionar Lucro',
+    perda: '📉 Adicionar Perda'
+  };
+  document.getElementById('titulo-registro').textContent = titulos[destino];
+  document.getElementById('form-registro').reset();
+  document.getElementById('tipo-registro').value = destino;
+  // data padrão = hoje
+  document.getElementById('data').valueAsDate = new Date();
+  mostrarTela('registro');
+}
+
+/* ============================================================
+   SALVAR REGISTRO (investimento/lucro/perda)
+   ============================================================ */
+document.getElementById('form-registro').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const tipo = document.getElementById('tipo-registro').value;
+  const novo = {
+    id: Date.now(),
+    tipo: tipo,
+    cultura: document.getElementById('cultura').value,
+    valor: parseFloat(document.getElementById('valor').value),
+    data: document.getElementById('data').value,
+    obs: document.getElementById('obs').value
+  };
+  registros.push(novo);
+  localStorage.setItem('agrofacil_registros', JSON.stringify(registros));
+  alert('✅ Registro salvo com sucesso!');
+  atualizarResumo();
+  renderizarRegistros();
+  mostrarTela('painel');
+});
+
+/* ============================================================
+   RESUMO FINANCEIRO
+   ============================================================ */
+function atualizarResumo() {
+  const investimento = registros.filter(r => r.tipo === 'investimento')
+    .reduce((s, r) => s + r.valor, 0);
+  const lucro = registros.filter(r => r.tipo === 'lucro')
+    .reduce((s, r) => s + r.valor, 0);
+  const perda = registros.filter(r => r.tipo === 'perda')
+    .reduce((s, r) => s + r.valor, 0);
+  const saldo = lucro - investimento - perda;
+
+  document.getElementById('res-investimento').textContent = formatarMoeda(investimento);
+  document.getElementById('res-lucro').textContent = formatarMoeda(lucro);
+  document.getElementById('res-perda').textContent = formatarMoeda(perda);
+  document.getElementById('res-saldo').textContent = formatarMoeda(saldo);
+
+  const cardSaldo = document.getElementById('card-saldo');
+  if (saldo < 0) cardSaldo.classList.add('negativo');
+  else cardSaldo.classList.remove('negativo');
+}
+
+function formatarMoeda(v) {
+  return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+/* ============================================================
+   LISTAR REGISTROS
+   ============================================================ */
+function renderizarRegistros() {
+  const div = document.getElementById('lista-registros');
+  if (registros.length === 0) {
+    div.innerHTML = '<p class="msg-vazio">Nenhum registro ainda. Comece adicionando um investimento, lucro ou perda.</p>';
+    return;
+  }
+  const ordenados = [...registros].sort((a, b) => new Date(b.data) - new Date(a.data));
+  div.innerHTML = ordenados.map(r => {
+    const sinal = r.tipo === 'perda' ? '-' : (r.tipo === 'investimento' ? '-' : '+');
+    const classe = r.tipo === 'perda' || r.tipo === 'investimento' ? 'neg' : 'pos';
+    const icone = r.tipo === 'investimento' ? '💵' : r.tipo === 'lucro' ? '🌾' : '📉';
+    const dataBr = new Date(r.data + 'T00:00:00').toLocaleDateString('pt-BR');
+    return `
+      <div class="registro ${r.tipo === 'perda' ? 'perda' : ''}">
+        <div class="info">
+          <strong>${icone} ${r.cultura}</strong>
+          <small>${dataBr}${r.obs ? ' • ' + r.obs : ''}</small>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span class="valor-reg ${classe}">${sinal} ${formatarMoeda(r.valor)}</span>
+          <button class="btn btn-vermelho" style="padding:6px 10px; font-size:0.8rem;"
+            onclick="removerRegistro(${r.id})">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function removerRegistro(id) {
+  if (!confirm('Deseja remover este registro?')) return;
+  registros = registros.filter(r => r.id !== id);
+  localStorage.setItem('agrofacil_registros', JSON.stringify(registros));
+  atualizarResumo();
+  renderizarRegistros();
+}
+
+/* ============================================================
+   DIÁRIO DE CULTIVO
+   ============================================================ */
+document.getElementById('form-diario').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const novo = {
+    id: Date.now(),
+    cultura: document.getElementById('d-cultura').value,
+    plantio: document.getElementById('d-mes-plantio').value,
+    colheita: document.getElementById('d-mes-colheita').value,
+    notas: document.getElementById('d-notas').value
+  };
+  diario.push(novo);
+  localStorage.setItem('agrofacil_diario', JSON.stringify(diario));
+  document.getElementById('form-diario').reset();
+  renderizarDiario();
+  alert('📖 Anotação salva no diário!');
+});
+
+function renderizarDiario() {
+  const div = document.getElementById('lista-diario');
+  if (diario.length === 0) {
+    div.innerHTML = '<p class="msg-vazio">Seu diário está vazio. Adicione a primeira cultura acima.</p>';
+    return;
+  }
+  div.innerHTML = diario.map(d => `
+    <div class="diario-item">
+      <h4>🌾 ${d.cultura}</h4>
+      <p><strong>📅 Plantio:</strong> ${d.plantio}</p>
+      <p><strong>🌾 Colheita:</strong> ${d.colheita}</p>
+      ${d.notas ? `<p><strong>📝 Notas:</strong> ${d.notas}</p>` : ''}
+      <button class="btn btn-vermelho" style="margin-top:10px; padding:6px 12px; font-size:0.85rem;"
+        onclick="removerDiario(${d.id})">
+        <i class="fa-solid fa-trash"></i> Remover
+      </button>
+    </div>
+  `).join('');
+}
+
+function removerDiario(id) {
+  if (!confirm('Remover esta anotação?')) return;
+  diario = diario.filter(d => d.id !== id);
+  localStorage.setItem('agrofacil_diario', JSON.stringify(diario));
+  renderizarDiario();
+}
+
+/* ============================================================
+   INICIALIZAÇÃO
+   ============================================================ */
+window.addEventListener('load', () => {
+  if (usuario) {
+    entrarNoPainel();
+  } else {
+    mostrarTela('questionario');
+  }
+});
+</script>
+
+</body>
+</html>
